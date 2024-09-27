@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	routes "github.com/yourusername/url-shortener-svc/internal/routers"
+	"github.com/yourusername/url-shortener-svc/internal/services"
+	"log"
 
 	"github.com/yourusername/url-shortener-svc/config"
 	db "github.com/yourusername/url-shortener-svc/storage"
@@ -29,10 +29,11 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// Routes
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Welcome to the URL Shortener Service!")
-	})
+	// initialize URL service
+	urlService := services.URLService{}
+
+	// initialize routes
+	routes.InitRoutes(e, &urlService)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
