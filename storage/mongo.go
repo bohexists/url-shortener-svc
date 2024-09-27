@@ -2,27 +2,43 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
-var Client *mongo.Client
+// MongoInstance структура для хранения экземпляра MongoDB
+type MongoInstance struct {
+	Client *mongo.Client
+	DB     *mongo.Database
+}
 
-func InitMongo(uri string) error {
-	clientOptions := options.Client().ApplyURI(uri)
+var MI MongoInstance
 
-	var err error
-	Client, err = mongo.Connect(context.TODO(), clientOptions)
+// Connect устанавливает подключение к MongoDB
+func Connect(uri, dbName string) error {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return err
 	}
 
-	err = Client.Ping(context.TODO(), nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = client.Connect(ctx)
 	if err != nil {
 		return err
 	}
 
-	log.Println("Connected to MongoDB!")
+	db := client.Database(dbName)
+
+	MI = MongoInstance{
+		Client: client,
+		DB:     db,
+	}
+
+	fmt.Println("Connected to MongoDB!")
 	return nil
 }
