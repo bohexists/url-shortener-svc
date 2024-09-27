@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// MongoInstance структура для хранения экземпляра MongoDB
+// MongoInstance structure for MongoDB
 type MongoInstance struct {
 	Client *mongo.Client
 	DB     *mongo.Database
@@ -17,7 +17,7 @@ type MongoInstance struct {
 
 var MI MongoInstance
 
-// Connect устанавливает подключение к MongoDB
+// Connect initializes MongoDB
 func Connect(uri, dbName string) error {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {

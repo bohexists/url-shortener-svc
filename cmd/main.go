@@ -13,27 +13,27 @@ import (
 
 func main() {
 
-	// Загружаем конфигурацию
+	// Load configuration
 	cfg := config.LoadConfig()
 
-	// Подключаемся к MongoDB
+	// Connect to MongoDB
 	err := db.Connect(cfg.MongoURI, "url_shortener")
 	if err != nil {
 		log.Fatal("Error connecting to MongoDB:", err)
 	}
 
-	// Создаем новый Echo-инстанс
+	// Echo instance
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// Маршруты
+	// Routes
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome to the URL Shortener Service!")
 	})
 
-	// Запуск сервера
+	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
 }
