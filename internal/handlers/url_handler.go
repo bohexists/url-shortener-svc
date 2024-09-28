@@ -4,16 +4,16 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	service "github.com/yourusername/url-shortener-svc/internal/services"
+	services "github.com/yourusername/url-shortener-svc/internal/services"
 )
 
 type URLHandler struct {
-	urlService service.URLService
+	urlService services.URLServiceinterface
 }
 
-func NewURLHandler(service service.URLService) *URLHandler {
+func NewURLHandler(urlService services.URLServiceinterface) *URLHandler {
 	return &URLHandler{
-		urlService: service,
+		urlService: urlService,
 	}
 }
 

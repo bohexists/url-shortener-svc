@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 )
 
 // URLService defines the interface for URL shortening
-type URLService interface {
+type URLServiceinterface interface {
 	ShortenURL(originalURL string) (string, error)
 	GetOriginalURL(shortURL string) (*models.URL, error)
 }
@@ -21,7 +21,7 @@ type urlService struct {
 }
 
 // NewURLService creates a new URLService
-func NewURLService(repo repository.URLRepository) URLService {
+func NewURLService(repo repository.URLRepository) *urlService {
 	return &urlService{urlRepo: repo}
 }
 
@@ -44,7 +44,7 @@ func (s *urlService) ShortenURL(originalURL string) (string, error) {
 	}
 
 	// Save the URL
-	_, err = s.urlRepo.SaveURL(&url)
+	err = s.urlRepo.SaveURL(&url)
 	if err != nil {
 		return "", err
 	}
