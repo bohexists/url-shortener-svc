@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/yourusername/url-shortener-svc/internal/dto"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -19,9 +20,7 @@ func NewURLHandler(urlService services.URLServiceinterface) *URLHandler {
 
 // ShortenURL handles the request for creating a short URL
 func (h *URLHandler) ShortenURL(c echo.Context) error {
-	var request struct {
-		OriginalURL string `json:"original_url" validate:"required,url"`
-	}
+	var request dto.ShortenURLRequestDTO
 
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
@@ -37,7 +36,10 @@ func (h *URLHandler) ShortenURL(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to shorten URL"})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"short_url": shortURL})
+	response := dto.ShortenURLResponseDTO{
+		ShortURL: shortURL,
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 // RedirectToOriginalURL handles the redirection to the original URL
@@ -50,5 +52,8 @@ func (h *URLHandler) RedirectToOriginalURL(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "URL not found"})
 	}
 
-	return c.Redirect(http.StatusMovedPermanently, url.OriginalURL)
+	response := dto.GetOriginalURLResponseDTO{
+		OriginalURL: url.OriginalURL,
+	}
+	return c.JSON(http.StatusOK, response)
 }
