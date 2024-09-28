@@ -1,60 +1,73 @@
 package services
 
 import (
-	"context"
+	"errors"
 	"math/rand"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/yourusername/url-shortener-svc/internal/model"
-	db "github.com/yourusername/url-shortener-svc/storage"
+	"github.com/yourusername/url-shortener-svc/internal/models"
+	"github.com/yourusername/url-shortener-svc/internal/repository"
 )
 
-// URLService serves a new URL
-type URLService struct{}
+// URLService defines the interface for URL shortening
+type URLServiceinterface interface {
+	ShortenURL(originalURL string) (string, error)
+	GetOriginalURL(shortURL string) (*models.URL, error)
+}
 
-// CreateShortURL creates a new URL
-func (s *URLService) CreateShortURL(originalURL string) (string, error) {
-	// Generate short code
-	shortCode := generateShortCode()
+// urlService struct implementing the interface
+type urlService struct {
+	urlRepo repository.URLRepository
+}
 
-	url := model.URL{
-		ID:          primitive.NewObjectID(),
+// NewURLService creates a new URLService
+func NewURLService(repo repository.URLRepository) *urlService {
+	return &urlService{urlRepo: repo}
+}
+
+// ShortenURL generates a short URL and saves the original one
+func (s *urlService) ShortenURL(originalURL string) (string, error) {
+	shortURL := generateShortCode()
+
+	// Check if the short URL already exists
+	_, err := s.urlRepo.FindByShortURL(shortURL)
+	if err == nil {
+		// If found, generate a new one
+		shortURL = generateShortCode()
+	}
+
+	// Create a new URL models
+	url := models.URL{
 		OriginalURL: originalURL,
-		ShortCode:   shortCode,
+		ShortCode:   shortURL,
 		CreatedAt:   time.Now().Unix(),
 	}
 
-	// Place URL in database
-	_, err := db.MI.DB.Collection("urls").InsertOne(context.Background(), url)
+	// Save the URL
+	err = s.urlRepo.SaveURL(&url)
 	if err != nil {
 		return "", err
 	}
 
-	return shortCode, nil
+	return shortURL, nil
 }
 
-// GetOriginalURL retrieves a new URL
-func (s *URLService) GetOriginalURL(shortCode string) (string, error) {
-	var url model.URL
-
-	// Find URL in database
-	err := db.MI.DB.Collection("urls").FindOne(context.Background(), bson.M{"short_code": shortCode}).Decode(&url)
+// GetOriginalURL retrieves the original URL by short code
+func (s *urlService) GetOriginalURL(shortURL string) (*models.URL, error) {
+	url, err := s.urlRepo.FindByShortURL(shortURL)
 	if err != nil {
-		return "", err
+		return nil, errors.New("URL not found")
 	}
-
-	return url.OriginalURL, nil
+	return url, nil
 }
 
-// generateShortCode generates a new short code
+// Helper function to generate a random short code
 func generateShortCode() string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, 6)
-	for i := range b {
-		b[i] = charset[rand.Intn(len(charset))]
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	rand.Seed(time.Now().UnixNano())
+	result := make([]byte, 6) // short code of length 6
+	for i := range result {
+		result[i] = letters[rand.Intn(len(letters))]
 	}
-	return string(b)
+	return string(result)
 }
