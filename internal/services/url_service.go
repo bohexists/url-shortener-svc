@@ -5,14 +5,14 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/yourusername/url-shortener-svc/internal/model"
+	"github.com/yourusername/url-shortener-svc/internal/models"
 	"github.com/yourusername/url-shortener-svc/internal/repository"
 )
 
 // URLService defines the interface for URL shortening
 type URLService interface {
 	ShortenURL(originalURL string) (string, error)
-	GetOriginalURL(shortURL string) (*model.URL, error)
+	GetOriginalURL(shortURL string) (*models.URL, error)
 }
 
 // urlService struct implementing the interface
@@ -36,8 +36,8 @@ func (s *urlService) ShortenURL(originalURL string) (string, error) {
 		shortURL = generateShortCode()
 	}
 
-	// Create a new URL model
-	url := model.URL{
+	// Create a new URL models
+	url := models.URL{
 		OriginalURL: originalURL,
 		ShortCode:   shortURL,
 		CreatedAt:   time.Now().Unix(),
@@ -53,7 +53,7 @@ func (s *urlService) ShortenURL(originalURL string) (string, error) {
 }
 
 // GetOriginalURL retrieves the original URL by short code
-func (s *urlService) GetOriginalURL(shortURL string) (*model.URL, error) {
+func (s *urlService) GetOriginalURL(shortURL string) (*models.URL, error) {
 	url, err := s.urlRepo.FindByShortURL(shortURL)
 	if err != nil {
 		return nil, errors.New("URL not found")

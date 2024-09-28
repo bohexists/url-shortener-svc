@@ -1,4 +1,4 @@
-package model
+package models
 
 // URL presents a short URL
 type URL struct {
