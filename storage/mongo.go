@@ -3,13 +3,13 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// MongoInstance structure for MongoDB
 type MongoInstance struct {
 	Client *mongo.Client
 	DB     *mongo.Database
@@ -17,11 +17,13 @@ type MongoInstance struct {
 
 var MI MongoInstance
 
-// Connect initializes MongoDB
+// Connect initializes the MongoDB connection
 func Connect(uri, dbName string) error {
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+	clientOptions := options.Client().ApplyURI(uri)
+
+	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create mongo client: %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -29,16 +31,14 @@ func Connect(uri, dbName string) error {
 
 	err = client.Connect(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to connect to mongo: %v", err)
 	}
-
-	db := client.Database(dbName)
 
 	MI = MongoInstance{
 		Client: client,
-		DB:     db,
+		DB:     client.Database(dbName),
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	log.Println("Connected to MongoDB")
 	return nil
 }
