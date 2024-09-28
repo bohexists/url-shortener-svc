@@ -28,7 +28,7 @@ func NewURLRepository() URLRepository {
 // SaveURL saves a new URL
 func (r *MongoURLRepository) SaveURL(url model.URL) (string, error) {
 	url.ID = primitive.NewObjectID().Hex()
-	url.CreatedAt = time.Now()
+	url.CreatedAt = time.Now().Unix()
 
 	collection := db.MI.DB.Collection("urls")
 	_, err := collection.InsertOne(context.TODO(), url)
