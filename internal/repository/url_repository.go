@@ -2,12 +2,13 @@ package repository
 
 import (
 	"context"
-	"github.com/yourusername/url-shortener-svc/internal/models"
-	db "github.com/yourusername/url-shortener-svc/storage"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/bohexists/url-shortener-svc/internal/models"
+	db "github.com/bohexists/url-shortener-svc/storage"
 )
 
 type URLRepository struct {

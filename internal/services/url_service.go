@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/yourusername/url-shortener-svc/internal/models"
-	"github.com/yourusername/url-shortener-svc/internal/repository"
+	"github.com/bohexists/url-shortener-svc/internal/models"
+	"github.com/bohexists/url-shortener-svc/internal/repository"
 )
 
 // URLService defines the interface for URL shortening

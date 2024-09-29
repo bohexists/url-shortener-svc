@@ -3,7 +3,7 @@ package routers
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/yourusername/url-shortener-svc/internal/handlers"
+	"github.com/bohexists/url-shortener-svc/internal/handlers"
 )
 
 // InitRoutes initializes the router
