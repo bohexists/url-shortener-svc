@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/yourusername/url-shortener-svc/internal/handlers"
-	"github.com/yourusername/url-shortener-svc/internal/repository"
-	"github.com/yourusername/url-shortener-svc/internal/routers"
-	"github.com/yourusername/url-shortener-svc/internal/services"
 	"log"
 
-	"github.com/yourusername/url-shortener-svc/config"
-	db "github.com/yourusername/url-shortener-svc/storage"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/bohexists/url-shortener-svc/config"
+	"github.com/bohexists/url-shortener-svc/internal/handlers"
+	"github.com/bohexists/url-shortener-svc/internal/repository"
+	"github.com/bohexists/url-shortener-svc/internal/routers"
+	"github.com/bohexists/url-shortener-svc/internal/services"
+	"github.com/bohexists/url-shortener-svc/pkg/logger"
+	"github.com/bohexists/url-shortener-svc/pkg/server"
+	db "github.com/bohexists/url-shortener-svc/storage"
 )
 
 func main() {
@@ -29,6 +32,8 @@ func main() {
 	urlService := services.NewURLService(*urlRepo)
 	urlHandler := handlers.NewURLHandler(urlService)
 
+	// Initialize logger
+	logger.InitLogger()
 	// Echo instance
 	e := echo.New()
 
@@ -40,5 +45,5 @@ func main() {
 	routers.InitRoutes(e, urlHandler)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":" + cfg.Port))
+	server.StartServer(e, ":8080")
 }

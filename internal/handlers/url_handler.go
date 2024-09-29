@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/yourusername/url-shortener-svc/internal/dto"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	services "github.com/yourusername/url-shortener-svc/internal/services"
+
+	"github.com/bohexists/url-shortener-svc/internal/dto"
+	"github.com/bohexists/url-shortener-svc/internal/services"
 )
 
 type URLHandler struct {
