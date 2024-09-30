@@ -13,6 +13,8 @@ import (
 	"github.com/bohexists/url-shortener-svc/internal/services"
 	"github.com/bohexists/url-shortener-svc/pkg/logger"
 	"github.com/bohexists/url-shortener-svc/pkg/server"
+	customValidator "github.com/bohexists/url-shortener-svc/pkg/validator"
+
 	db "github.com/bohexists/url-shortener-svc/storage"
 )
 
@@ -36,6 +38,8 @@ func main() {
 	logger.InitLogger()
 	// Echo instance
 	e := echo.New()
+	// Custom Validator
+	e.Validator = customValidator.NewValidator()
 
 	// Middleware
 	e.Use(middleware.Logger())
